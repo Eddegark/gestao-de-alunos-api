@@ -1,0 +1,64 @@
+{
+  "admin": {
+    "email": "admin@escola.com",
+    "senha": "admin123",
+    "role": "admin"
+  },
+  "alunos": [
+    {
+      "nome": "João Silva",
+      "email": "joao.silva@escola.com",
+      "matricula": "2024001",
+      "senha": "senha123"
+    },
+    {
+      "nome": "Maria Santos",
+      "email": "maria.santos@escola.com",
+      "matricula": "2024002",
+      "senha": "senha456"
+    },
+    {
+      "nome": "Pedro Oliveira",
+      "email": "pedro.oliveira@escola.com",
+      "matricula": "2024003",
+      "senha": "senha789"
+    }
+  ],
+  "trabalhos": [
+    {
+      "titulo": "Trabalho de Matemática",
+      "descricao": "Resolver exercícios de álgebra",
+      "status": "entregue"
+    },
+    {
+      "titulo": "Projeto de Física",
+      "descricao": "Simulação de movimento de corpos",
+      "status": "entregue"
+    },
+    {
+      "titulo": "Ensaio de Literatura",
+      "descricao": "Análise crítica de obra clássica",
+      "status": "entregue"
+    }
+  ],
+  "loginAttempts": [
+    {
+      "email": "admin@escola.com",
+      "senha": "admin123",
+      "expectedStatus": 200,
+      "shouldSucceed": true
+    },
+    {
+      "email": "admin@escola.com",
+      "senha": "senhaincorreta",
+      "expectedStatus": 401,
+      "shouldSucceed": false
+    },
+    {
+      "email": "email.inexistente@escola.com",
+      "senha": "qualquersenha",
+      "expectedStatus": 401,
+      "shouldSucceed": false
+    }
+  ]
+}
