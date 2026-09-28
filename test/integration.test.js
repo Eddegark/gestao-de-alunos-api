@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import app from '../src/app.js';
 import { setupTestDB, teardownTestDB } from './setup.js';
+import { loginAsAdmin, loginAsStudent } from './helpers/auth.helper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,6 +23,10 @@ describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
 
   before(async () => {
     await setupTestDB();
+
+    // Login como admin via helper, usado nos passos seguintes (cadastro de aluno, matrícula).
+    const admin = await loginAsAdmin(testData.admin.email, testData.admin.senha);
+    adminToken = admin.token;
   });
 
   after(async () => {
@@ -41,11 +46,6 @@ describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
           expect(response.body).to.have.property('token');
           expect(response.body).to.have.property('usuario');
           expect(response.body.usuario.role).to.equal('admin');
-
-          // Salvar token do admin para próximos testes
-          if (attempt.email === testData.admin.email && attempt.senha === testData.admin.senha) {
-            adminToken = response.body.token;
-          }
         } else {
           expect(response.body).to.have.property('error');
           expect(response.body.error).to.include('E-mail ou senha inválidos');
@@ -84,17 +84,13 @@ describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
   describe('3. Login como Aluno', () => {
     it('fazer login com o aluno cadastrado', async () => {
       const primeiroAluno = testData.alunos[0];
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send({ email: primeiroAluno.email, senha: primeiroAluno.senha });
+      const { token, usuario } = await loginAsStudent(primeiroAluno.email, primeiroAluno.senha);
 
-      expect(response.status).to.equal(200);
-      expect(response.body).to.have.property('token');
-      expect(response.body).to.have.property('usuario');
-      expect(response.body.usuario.role).to.equal('aluno');
-      expect(response.body.usuario.nome).to.equal(primeiroAluno.nome);
+      expect(token).to.be.a('string');
+      expect(usuario.role).to.equal('aluno');
+      expect(usuario.nome).to.equal(primeiroAluno.nome);
 
-      loginAlunoToken = response.body.token;
+      loginAlunoToken = token;
     });
 
     it('falhar ao fazer login com senha incorreta', async () => {
