@@ -6,8 +6,13 @@ mongoose.connection.on('error', (err) => {
   console.error('Erro de conexão com o MongoDB:', err.message);
 });
 
-await mongoose.connect(MONGODB_URI);
-
-console.log(`MongoDB conectado em ${MONGODB_URI}`);
+if (process.env.NODE_ENV !== 'test') {
+  await mongoose.connect(MONGODB_URI);
+  console.log(`MongoDB conectado em ${MONGODB_URI}`);
+} else {
+  mongoose.connect(MONGODB_URI).catch((err) => {
+    console.log('Aguardando MongoDB estar disponível...');
+  });
+}
 
 export default mongoose;

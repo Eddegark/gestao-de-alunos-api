@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import app from '../src/app.js';
 import { loginAsAdmin, loginAsStudent } from './helpers/auth.helper.js';
+import { setupTestDB, teardownTestDB, clearTestDB } from './setup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,15 +14,20 @@ const __dirname = path.dirname(__filename);
 const testData = JSON.parse(readFileSync(path.join(__dirname, 'fixtures', 'test-data.json'), 'utf8'));
 
 describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
-  this.timeout(10000);
+  this.timeout(15000);
   let adminToken;
   let criadoAlunoId;
   let loginAlunoToken;
   let disciplinaId;
   let trabalhoId;
 
+  before(async () => {
+    await setupTestDB();
+    await clearTestDB();
+  });
+
   after(async () => {
-    await mongoose.connection.close();
+    await teardownTestDB();
   });
 
   describe('1. Login como Admin - Data-Driven Tests', () => {

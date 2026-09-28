@@ -1,5 +1,4 @@
 {
-  "require": [],
   "spec": "test/**/*.test.js",
   "timeout": 10000,
   "exit": true,
