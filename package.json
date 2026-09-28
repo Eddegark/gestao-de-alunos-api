@@ -4,6 +4,9 @@
   "description": "API REST para gestão de alunos, disciplinas, notas e trabalhos, com persistência em MongoDB.",
   "main": "src/server.js",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
