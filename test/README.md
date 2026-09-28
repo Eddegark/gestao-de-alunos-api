@@ -144,10 +144,7 @@ PORT=3000
 NODE_ENV=development
 ```
 
-Para testes com MongoDB em Docker:
-```env
-MONGODB_URI=mongodb://mongodb:27017/gestao-de-alunos-test
-```
+Os testes não usam essas variáveis: eles rodam contra um MongoDB em memória (`mongodb-memory-server`), iniciado automaticamente por `test/setup.js`. Não é preciso configurar `MONGODB_URI` nem ter MongoDB instalado para rodar `npm test`.
 
 ## 🔄 GitHub Actions
 
@@ -155,7 +152,6 @@ Os testes rodam automaticamente:
 - ✅ Em cada push para `main`, `master` ou `develop`
 - ✅ Em cada Pull Request
 - ✅ Com Node.js 18.x e 20.x
-- ✅ Com MongoDB em container
 
 **Arquivo**: `.github/workflows/test.yml`
 

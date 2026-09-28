@@ -133,6 +133,9 @@ export async function seed() {
   await seedTrabalhos();
 }
 
-await seed();
+if (process.env.NODE_ENV !== 'test') {
+  await seed();
+}
+// Em modo test, quem chama seed() é test/setup.js, após conectar ao MongoDB em memória.
 
 export default { seed };

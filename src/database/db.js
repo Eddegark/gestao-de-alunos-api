@@ -9,10 +9,7 @@ mongoose.connection.on('error', (err) => {
 if (process.env.NODE_ENV !== 'test') {
   await mongoose.connect(MONGODB_URI);
   console.log(`MongoDB conectado em ${MONGODB_URI}`);
-} else {
-  mongoose.connect(MONGODB_URI).catch((err) => {
-    console.log('Aguardando MongoDB estar disponível...');
-  });
 }
+// Em modo test, a conexão é controlada por test/setup.js (MongoDB em memória).
 
 export default mongoose;

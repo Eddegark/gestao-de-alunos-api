@@ -7,9 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "NODE_ENV=test mocha test/**/*.test.js --exit",
-    "test:integration": "NODE_ENV=test mocha test/integration.test.js --exit --timeout 15000",
-    "test:watch": "NODE_ENV=test mocha test/**/*.test.js --watch"
+    "test": "cross-env NODE_ENV=test mocha test/**/*.test.js --exit",
+    "test:integration": "cross-env NODE_ENV=test mocha test/integration.test.js --exit --timeout 15000",
+    "test:watch": "cross-env NODE_ENV=test mocha test/**/*.test.js --watch"
   },
   "author": "",
   "license": "ISC",
@@ -27,7 +27,9 @@
   },
   "devDependencies": {
     "chai": "^6.2.2",
+    "cross-env": "^10.1.0",
     "mocha": "^11.8.0",
+    "mongodb-memory-server": "^11.3.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.2.2"
   }

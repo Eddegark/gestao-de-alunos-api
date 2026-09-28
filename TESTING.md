@@ -270,16 +270,10 @@ describe('Novo Teste', () => {
 
 ## 🐛 Troubleshooting
 
-### MongoDB não conecta
-```bash
-# Verificar se MongoDB está rodando
-mongosh
+### MongoDB dos testes
+Os testes usam `mongodb-memory-server`: um MongoDB em memória, iniciado e finalizado automaticamente pelo `test/setup.js`. Não é necessário instalar, rodar ou configurar nenhum MongoDB externo (nem local, nem Docker) para rodar `npm test`.
 
-# Ou iniciar MongoDB
-brew services start mongodb-community
-# ou
-docker run -d -p 27017:27017 mongo:latest
-```
+Na primeira execução, o pacote baixa o binário do MongoDB (uma vez, fica em cache local); isso pode deixar o primeiro `npm test` mais lento.
 
 ### Timeout nos testes
 Aumentar timeout no `.mocharc.json` ou no describe:

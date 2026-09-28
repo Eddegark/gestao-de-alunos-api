@@ -8,19 +8,19 @@
     {
       "nome": "João Silva",
       "email": "joao.silva@escola.com",
-      "matricula": "2024001",
+      "matricula": "2099101",
       "senha": "senha123"
     },
     {
       "nome": "Maria Santos",
       "email": "maria.santos@escola.com",
-      "matricula": "2024002",
+      "matricula": "2099102",
       "senha": "senha456"
     },
     {
       "nome": "Pedro Oliveira",
       "email": "pedro.oliveira@escola.com",
-      "matricula": "2024003",
+      "matricula": "2099103",
       "senha": "senha789"
     }
   ],

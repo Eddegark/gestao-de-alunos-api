@@ -10,26 +10,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mongodb:
-        image: mongo:7
-        options: >-
-          --health-cmd mongosh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 27017:27017
-
     strategy:
       matrix:
         node-version: [18.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -37,37 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          for i in {1..30}; do
-            if nc -z localhost 27017; then
-              echo "MongoDB is ready!"
-              exit 0
-            fi
-            echo "Waiting for MongoDB... ($i/30)"
-            sleep 1
-          done
-          echo "MongoDB failed to start"
-          exit 1
-
       - name: Run tests
         run: npm test
-        env:
-          MONGODB_URI: mongodb://localhost:27017/gestao-de-alunos-test
-          NODE_ENV: test
-
-      - name: Run integration tests
-        run: npm run test:integration
-        env:
-          MONGODB_URI: mongodb://localhost:27017/gestao-de-alunos-test
-          NODE_ENV: test
-
-      - name: Upload coverage
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: |
-            test/
-            package.json
-          retention-days: 7

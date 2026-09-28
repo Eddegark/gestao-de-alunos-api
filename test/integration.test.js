@@ -1,29 +1,27 @@
 import request from 'supertest';
 import { expect } from 'chai';
-import mongoose from 'mongoose';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import app from '../src/app.js';
-import { loginAsAdmin, loginAsStudent } from './helpers/auth.helper.js';
-import { setupTestDB, teardownTestDB, clearTestDB } from './setup.js';
+import { setupTestDB, teardownTestDB } from './setup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const testData = JSON.parse(readFileSync(path.join(__dirname, 'fixtures', 'test-data.json'), 'utf8'));
 
+// Disciplina seedada em src/database/seed.js, usada para matricular o aluno criado no teste.
+const DISCIPLINA_SEED_ID = 'disciplina-matematica';
+
 describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
   this.timeout(15000);
   let adminToken;
   let criadoAlunoId;
   let loginAlunoToken;
-  let disciplinaId;
-  let trabalhoId;
 
   before(async () => {
     await setupTestDB();
-    await clearTestDB();
   });
 
   after(async () => {
@@ -70,14 +68,14 @@ describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
           });
 
         expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('_id');
+        expect(response.body).to.have.property('id');
         expect(response.body.nome).to.equal(aluno.nome);
         expect(response.body.email).to.equal(aluno.email);
         expect(response.body.matricula).to.equal(aluno.matricula);
 
         // Salvar o ID do primeiro aluno criado para usar nos próximos testes
         if (index === 0) {
-          criadoAlunoId = response.body._id;
+          criadoAlunoId = response.body.id;
         }
       });
     });
@@ -112,42 +110,32 @@ describe('Integração Completa: Admin, Aluno, Trabalhos', function () {
 
   describe('4. Registrar Entrega de Trabalho como Aluno', () => {
     before(async () => {
-      // Obter lista de disciplinas disponíveis para o aluno
-      const disciplinasResponse = await request(app)
-        .get(`/api/alunos/${criadoAlunoId}/disciplinas`)
-        .set('Authorization', `Bearer ${loginAlunoToken}`);
+      // Matricular o aluno recém-criado na disciplina seedada, pré-requisito para registrar trabalho.
+      const matriculaResponse = await request(app)
+        .post(`/api/admin/disciplinas/${DISCIPLINA_SEED_ID}/matriculas`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ alunoId: criadoAlunoId });
 
-      if (disciplinasResponse.status === 200 && disciplinasResponse.body.length > 0) {
-        disciplinaId = disciplinasResponse.body[0]._id;
-      }
+      expect(matriculaResponse.status).to.equal(201);
     });
 
     testData.trabalhos.forEach((trabalho, index) => {
       it(`registrar trabalho ${index + 1}: "${trabalho.titulo}"`, async () => {
-        if (!disciplinaId) {
-          this.skip();
-          return;
-        }
-
         const response = await request(app)
           .post(`/api/alunos/${criadoAlunoId}/trabalhos`)
           .set('Authorization', `Bearer ${loginAlunoToken}`)
           .send({
-            disciplinaId,
+            disciplinaId: DISCIPLINA_SEED_ID,
             titulo: trabalho.titulo,
             descricao: trabalho.descricao,
           });
 
         expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('_id');
+        expect(response.body).to.have.property('id');
         expect(response.body.titulo).to.equal(trabalho.titulo);
         expect(response.body.descricao).to.equal(trabalho.descricao);
         expect(response.body.status).to.equal('entregue');
         expect(response.body.alunoId).to.equal(criadoAlunoId);
-
-        if (index === 0) {
-          trabalhoId = response.body._id;
-        }
       });
     });
   });
